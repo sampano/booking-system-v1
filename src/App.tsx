@@ -40,7 +40,7 @@ function App() {
     updateCustomer,
     updateBookingUser,
     setStep,
-    setMode, // <<< NEW: from store
+    setMode,
     confirmBooking,
     cancelBooking,
     rescheduleBooking,
