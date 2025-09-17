@@ -69,7 +69,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
   const [showCancel, setShowCancel] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
 
-  // --- helpers --------------------------------------------------------------
+  // --- helpers -------------------------------------------------------------
   const txt = (v: unknown) => (typeof v === "string" ? v.toLowerCase() : "");
   const anyTxtIncludes = (vals: unknown[], needle: string) =>
     vals.some((v) => txt(v).includes(needle));

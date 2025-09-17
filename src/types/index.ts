@@ -164,7 +164,7 @@ export interface RecurringSchedule {
   course: Course;
   termId: string;
   term: Term;
-  dayOfWeek: number; // 0-6 (Sunday-Saturday)
+  dayOfWeek: number;
   startTime: string;
   endTime: string;
   startDate: string;

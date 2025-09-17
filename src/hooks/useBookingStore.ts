@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Service, // ✅ make sure this is imported
+  Service,
   Course,
   TimeSlot,
   Customer,
