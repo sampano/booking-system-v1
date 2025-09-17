@@ -1,0 +1,72 @@
+import { Course } from '../types';
+
+export const courses: Course[] = [
+  {
+    id: '1',
+    title: 'Yoga for Beginners',
+    description: 'A gentle introduction to yoga focusing on basic poses, breathing techniques, and relaxation. Perfect for those new to yoga or looking to build a strong foundation.',
+    instructor: 'Sarah Johnson',
+    duration: 60,
+    price: 25,
+    maxParticipants: 15,
+    category: 'Fitness',
+    difficulty: 'beginner',
+    requirements: 'Bring a yoga mat and water bottle. Comfortable clothing recommended.',
+    imageUrl: 'https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg?auto=compress&cs=tinysrgb&w=800',
+    location: 'Studio A - Downtown',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: '2',
+    title: 'Advanced Pilates',
+    description: 'High-intensity Pilates class focusing on core strength, flexibility, and advanced movement patterns. Suitable for experienced practitioners.',
+    instructor: 'Michael Chen',
+    duration: 75,
+    price: 35,
+    maxParticipants: 12,
+    category: 'Fitness',
+    difficulty: 'advanced',
+    requirements: 'Previous Pilates experience required. Bring a mat and small towel.',
+    imageUrl: 'https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=800',
+    location: 'Studio B - Uptown',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: '3',
+    title: 'Meditation & Mindfulness',
+    description: 'Learn practical meditation techniques and mindfulness practices to reduce stress and improve mental clarity. Suitable for all levels.',
+    instructor: 'Emma Williams',
+    duration: 45,
+    price: 20,
+    maxParticipants: 20,
+    category: 'Wellness',
+    difficulty: 'beginner',
+    requirements: 'No prior experience needed. Comfortable seating will be provided.',
+    imageUrl: 'https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg?auto=compress&cs=tinysrgb&w=800',
+    location: 'Meditation Room - Downtown',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: '4',
+    title: 'Cooking Masterclass',
+    description: 'Learn professional cooking techniques and create delicious dishes from scratch. Includes hands-on practice and recipe cards.',
+    instructor: 'Chef Roberto Martinez',
+    duration: 120,
+    price: 65,
+    maxParticipants: 8,
+    category: 'Culinary',
+    difficulty: 'intermediate',
+    requirements: 'Apron will be provided. Please inform us of any food allergies.',
+    imageUrl: 'https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg?auto=compress&cs=tinysrgb&w=800',
+    location: 'Kitchen Studio - Midtown',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
