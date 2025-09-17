@@ -1,3 +1,5 @@
+// index.ts
+
 export interface Service {
   id: string;
   name: string;
@@ -14,6 +16,9 @@ export interface TimeSlot {
   available: boolean;
 }
 
+// NEW: booking flow flag
+export type BookingMode = "course" | "consultation";
+
 export interface Booking {
   id: string;
   serviceId: string;
@@ -22,12 +27,12 @@ export interface Booking {
   customerEmail: string;
   customerPhone: string;
   customerEmergencyContact?: string;
-  bookedBy?: string; // ID of the user who made the booking (if different from attendee)
-  bookedByName?: string; // Name of the user who made the booking
+  bookedBy?: string;
+  bookedByName?: string;
   date: string;
   timeSlot: TimeSlot;
-  status: 'confirmed' | 'pending' | 'cancelled';
-  paymentStatus: 'paid' | 'pending' | 'refunded' | 'store_credit';
+  status: "confirmed" | "pending" | "cancelled";
+  paymentStatus: "paid" | "pending" | "refunded" | "store_credit";
   refundAmount?: number;
   storeCreditAmount?: number;
   totalPrice: number;
@@ -37,6 +42,9 @@ export interface Booking {
   cancellationReason?: string;
   rescheduleHistory?: RescheduleRecord[];
   transferHistory?: TransferRecord[];
+
+  /** NEW: differentiate courses vs consultations */
+  mode?: "course" | "consultation";
 }
 
 export interface RescheduleRecord {
@@ -94,7 +102,7 @@ export interface Course {
   price: number;
   maxParticipants: number;
   category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: "beginner" | "intermediate" | "advanced";
   requirements?: string;
   imageUrl?: string;
   location: string;
@@ -112,7 +120,7 @@ export interface CourseSchedule {
   endTime: string;
   availableSpots: number;
   enrolledParticipants: string[]; // customer IDs
-  status: 'scheduled' | 'ongoing' | 'completed' | 'cancelled';
+  status: "scheduled" | "ongoing" | "completed" | "cancelled";
   location?: string;
   notes?: string;
 }
@@ -134,7 +142,7 @@ export interface Admin {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'super_admin';
+  role: "admin" | "super_admin";
   createdAt: string;
   isActive: boolean;
 }
@@ -198,11 +206,11 @@ export interface Analytics {
 
 export interface BulkOperation {
   id: string;
-  type: 'roster_update' | 'communication' | 'status_change';
-  targetType: 'course' | 'term' | 'booking';
+  type: "roster_update" | "communication" | "status_change";
+  targetType: "course" | "term" | "booking";
   targetIds: string[];
   operation: any;
-  status: 'pending' | 'in_progress' | 'completed' | 'failed';
+  status: "pending" | "in_progress" | "completed" | "failed";
   createdAt: string;
   completedAt?: string;
   results?: any;

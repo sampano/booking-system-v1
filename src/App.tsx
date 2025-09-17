@@ -20,9 +20,6 @@ import { Course } from "./types";
 import { ConsultationConfirmation } from "./components/ConsultationConfirmation";
 
 function App() {
-  const [bookingMode, setBookingMode] = useState<"course" | "consultation">(
-    "course"
-  );
   const [currentView, setCurrentView] = useState<
     "home" | "booking" | "course-detail"
   >("home");
@@ -43,6 +40,7 @@ function App() {
     updateCustomer,
     updateBookingUser,
     setStep,
+    setMode, // <<< NEW: from store
     confirmBooking,
     cancelBooking,
     rescheduleBooking,
@@ -57,7 +55,6 @@ function App() {
   const {
     user,
     admin,
-    isAuthenticated,
     isAdminAuthenticated,
     registerUser,
     loginUser,
@@ -114,24 +111,23 @@ function App() {
     setCurrentView(view);
   };
 
+  // Start generic booking flow from CTA (course mode)
   const handleStartBooking = () => {
+    setMode("course"); // <<< important
     setCurrentView("booking");
     setStep(1);
-    setBookingMode("course"); // NEW
-    if (user) {
-      updateBookingUser(user);
-    }
+    if (user) updateBookingUser(user);
   };
 
+  // Clicked "Book Now" on a course card or detail page
   const handleCourseSelectFromHome = (course: Course) => {
+    setMode("course"); // <<< important
     updateBookingSelectedCourse(course);
     setCurrentView("booking");
     setStep(2); // Skip to date selection since course is already selected
-    setBookingMode("course"); // NEW
-    if (user) {
-      updateBookingUser(user);
-    }
+    if (user) updateBookingUser(user);
   };
+
   const handleViewCourse = (course: Course) => {
     setSelectedCourseForDetail(course);
     setCurrentView("course-detail");
@@ -143,24 +139,20 @@ function App() {
   };
 
   const handleBookFromCourseDetail = (course: Course) => {
+    setMode("course"); // <<< important
     updateBookingSelectedCourse(course);
     setCurrentView("booking");
-    setStep(2); // Skip to date selection since course is already selected
-    setBookingMode("course"); // NEW
-    if (user) {
-      updateBookingUser(user);
-    }
+    setStep(2);
+    if (user) updateBookingUser(user);
   };
 
-  // NEW: when user clicks "Consult" on a course card
+  // Clicked "Consult" on a course card
   const handleConsultFromHome = (course: Course) => {
+    setMode("consultation"); // <<< important
     updateBookingSelectedCourse(course);
-    setBookingMode("consultation"); // key difference
     setCurrentView("booking");
     setStep(2); // go straight to calendar
-    if (user) {
-      updateBookingUser(user);
-    }
+    if (user) updateBookingUser(user);
   };
 
   const handleConfirmBooking = () => {
@@ -199,12 +191,12 @@ function App() {
       <div className="min-h-screen bg-gray-50">
         <Header
           currentView="admin"
-          onViewChange={() => {}} // Admin can't change views
-          user={null} // Don't show user info in admin interface
+          onViewChange={() => {}}
+          user={null}
           admin={admin}
-          onShowUserAuth={() => {}} // Not available in admin interface
+          onShowUserAuth={() => {}}
           onShowAdminAuth={() => setShowAdminLogin(true)}
-          onLogoutUser={() => {}} // Not available in admin interface
+          onLogoutUser={() => {}}
           onLogoutAdmin={() => {
             logoutAdmin();
             setShowAdminLogin(false);
@@ -248,10 +240,10 @@ function App() {
             selectedTimeSlot={bookingState.selectedTimeSlot}
             onDateSelect={updateDate}
             onTimeSlotSelect={updateTimeSlot}
-            // 👇 Branch here: consultation jumps straight to confirmation (step 4)
+            // Consultation jumps straight to confirmation (step 4)
             onNext={() => {
-              if (bookingMode === "consultation") {
-                // If customer info is missing, prefill it from the signed-in user
+              if (bookingState.mode === "consultation") {
+                // Prefill customer from signed-in user if empty
                 if (!bookingState.customer) {
                   if (user) {
                     updateCustomer({
@@ -264,20 +256,19 @@ function App() {
                       notes: "",
                     });
                   } else {
-                    // no user yet? require auth before confirmation
                     setShowUserAuth(true);
-                    return; // stop advancing until they sign in
+                    return;
                   }
                 }
-                setStep(4); // ➜ skip CustomerForm, go to confirmation
+                setStep(4); // skip CustomerForm
               } else {
-                setStep(3); // normal course flow
+                setStep(3);
               }
             }}
             onBack={() => setStep(1)}
-            // NEW: tell the component which flow we’re in
-            mode={bookingMode}
-            // OPTIONAL: customize consultation slot length (defaults to 30 in my DateTimeSelection)
+            // Tell DateTimeSelection which flow
+            mode={bookingState.mode}
+            // (optional) tweak consult slot length
             consultationDurationMinutes={45}
           />
         ) : null;
@@ -304,7 +295,7 @@ function App() {
           return null;
         }
 
-        if (bookingMode === "consultation") {
+        if (bookingState.mode === "consultation") {
           return (
             <ConsultationConfirmation
               course={bookingState.selectedService}
@@ -313,10 +304,9 @@ function App() {
               customer={bookingState.customer}
               bookingUser={bookingState.bookingUser}
               onConfirm={() => {
-                // Reuse your existing confirm logic but no payment UI is shown here.
                 const bookingId = confirmBooking();
 
-                // (Optional) Auto-save attendee if different from booking user, same as courses:
+                // Optional: auto-save attendee same as course
                 if (
                   bookingState.bookingUser &&
                   bookingState.customer &&
@@ -331,13 +321,14 @@ function App() {
                 }
 
                 setConfirmedBookingId(bookingId);
-                setStep(5); // proceed to success screen
+                setStep(5);
               }}
-              onBack={() => setStep(2)} // since consultation skipped Step 3
+              onBack={() => setStep(2)} // consult flow skipped step 3
             />
           );
         }
-        // Default: course booking confirmation (your existing component)
+
+        // Course confirmation (with payment UI if you show it there)
         return (
           <BookingConfirmation
             course={bookingState.selectedService}
@@ -371,11 +362,11 @@ function App() {
         currentView={currentView}
         onViewChange={handleViewChange}
         user={user}
-        admin={null} // Don't show admin info in customer interface
+        admin={null}
         onShowUserAuth={() => setShowUserAuth(true)}
         onShowAdminAuth={() => setShowAdminLogin(true)}
         onLogoutUser={logoutUser}
-        onLogoutAdmin={() => {}} // Not available in customer interface
+        onLogoutAdmin={() => {}}
         onShowCustomerPortal={() => setShowCustomerPortal(true)}
       />
 
@@ -388,7 +379,7 @@ function App() {
             onViewCourse={handleViewCourse}
             onShowAuth={() => setShowUserAuth(true)}
             onStartBooking={handleStartBooking}
-            onConsult={handleConsultFromHome} // NEW
+            onConsult={handleConsultFromHome} // consult entry point
           />
         ) : currentView === "course-detail" && selectedCourseForDetail ? (
           <CourseDetailPage
@@ -457,9 +448,6 @@ function App() {
           onRescheduleBooking={rescheduleBooking}
           onCancelBooking={cancelBookingWithRefund}
           onTransferBooking={transferBooking}
-          onAddAttendee={addAttendee}
-          onUpdateAttendee={updateAttendee}
-          onDeleteAttendee={deleteAttendee}
           onUpdateProfile={updateUserProfile}
           onClose={() => setShowCustomerPortal(false)}
         />
